@@ -1,73 +1,85 @@
-// Core Game Logic Orchestrator
 document.addEventListener('DOMContentLoaded', () => {
-    let currentLevelIndex = 0;
+    let currentLevelIndex = 1;
     let timerInterval = null;
     let timeRemaining = 0;
+    let levelStartTime = 0;
+    let currentPuzzle = null;
+
+    const generator = new InfiniteRuleGenerator(window.profiler);
 
     UI.elements.themeBtn.addEventListener('click', () => UI.toggleTheme());
-    UI.elements.nextBtn.addEventListener('click', () => loadNextLevel());
+    
+    // Wire up NEXT button (handles both normal advancement & UI meta puzzles)
+    UI.elements.nextBtn.addEventListener('click', () => {
+        if (currentPuzzle && currentPuzzle.isMetaLevel) {
+            handlePuzzleEvaluation(null, -1, 'NEXT_CLICK');
+        } else {
+            loadNextLevel();
+        }
+    });
 
     function startLevel() {
-        const puzzle = PuzzleData[currentLevelIndex];
-        Analytics.resetTimer();
+        currentPuzzle = generator.generateLevel(currentLevelIndex);
+        levelStartTime = Date.now();
         
-        UI.renderPuzzle(puzzle, handleItemSelect);
-        UI.updateStats(currentLevelIndex + 1, Analytics.getDetectedBias(), null);
+        UI.renderPuzzle(currentPuzzle, (item, idx) => handlePuzzleEvaluation(item, idx, 'GRID_CLICK'));
+        UI.updateStats(currentLevelIndex, window.profiler.getDominantTrait(), null);
+
+        // Enable NEXT button if it's a Meta UI puzzle
+        if (currentPuzzle.isMetaLevel) {
+            UI.elements.nextBtn.disabled = false;
+        }
 
         clearInterval(timerInterval);
-        if (puzzle.hasTimer) {
-            timeRemaining = puzzle.timerSeconds;
-            UI.updateStats(currentLevelIndex + 1, Analytics.getDetectedBias(), timeRemaining);
+        if (currentPuzzle.hasTimer) {
+            timeRemaining = currentPuzzle.timerSeconds;
+            UI.updateStats(currentLevelIndex, window.profiler.getDominantTrait(), timeRemaining);
             
             timerInterval = setInterval(() => {
                 timeRemaining--;
-                UI.updateStats(currentLevelIndex + 1, Analytics.getDetectedBias(), timeRemaining);
+                UI.updateStats(currentLevelIndex, window.profiler.getDominantTrait(), timeRemaining);
 
                 if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
-                    handleTimeout(puzzle);
+                    handleTimeout();
                 }
             }, 1000);
         }
     }
 
-    function handleItemSelect(item, index) {
-        const puzzle = PuzzleData[currentLevelIndex];
-        const timeTaken = Date.now() - Analytics.firstClickTime;
-        
-        Analytics.trackClick(item, timeTaken);
-        UI.updateStats(currentLevelIndex + 1, Analytics.getDetectedBias(), timeRemaining);
+    function handlePuzzleEvaluation(item, index, actionType) {
+        const timeTakenMs = Date.now() - levelStartTime;
+        const isCorrect = currentPuzzle.evaluate(item, index, actionType);
 
-        const isCorrect = puzzle.evaluate(item, index);
+        window.profiler.recordAttempt({
+            timeTakenMs,
+            chosenItemIndex: index,
+            itemWasVisualBait: item ? !!item.isBait : false,
+            timedOut: false
+        });
 
         if (isCorrect) {
             clearInterval(timerInterval);
-            UI.showFeedback(true, "Correct. The rule shifted.");
+            UI.showFeedback(true, `Correct! ${currentPuzzle.explanation}`);
         } else {
-            UI.showFeedback(false, "❌ Wrong. Try again.");
+            UI.showFeedback(false, "❌ Wrong. The rule shifted. Try again.");
         }
     }
 
-    function handleTimeout(puzzle) {
-        // Special condition for puzzles where waiting is the key
-        if (puzzle.id === 3) {
-            UI.showFeedback(true, "Correct. Doing nothing was the solution.");
+    function handleTimeout() {
+        if (currentPuzzle.isDoNothingLevel) {
+            window.profiler.recordAttempt({ timeTakenMs: 5000, chosenItemIndex: -1, itemWasVisualBait: false, timedOut: false });
+            UI.showFeedback(true, `Correct! ${currentPuzzle.explanation}`);
         } else {
-            UI.showFeedback(false, "Time expired!");
+            window.profiler.recordAttempt({ timeTakenMs: 0, chosenItemIndex: -1, itemWasVisualBait: false, timedOut: true });
+            UI.showFeedback(false, "⏰ Time expired!");
         }
     }
 
     function loadNextLevel() {
         currentLevelIndex++;
-        if (currentLevelIndex < PuzzleData.length) {
-            startLevel();
-        } else {
-            UI.elements.instruction.innerText = "YOU COMPLETED THE DEMO.";
-            UI.elements.grid.innerHTML = '';
-            UI.showFeedback(true, "The game now understands how you think.");
-        }
+        startLevel();
     }
 
-    // Launch initial level
     startLevel();
 });
