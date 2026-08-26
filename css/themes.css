@@ -1,0 +1,39 @@
+/* Theme Definitions */
+
+/* 1. Cyberpunk Dark (Default) */
+[data-theme="dark"] {
+    --bg-color: #0b0e14;
+    --card-bg: #131722;
+    --accent-bg: #1a202c;
+    --text-color: #00ffcc;
+    --border-color: #00ffcc;
+    --item-bg: #1e2638;
+    --item-hover: #2a354d;
+    --btn-bg: #00ffcc;
+    --btn-hover: #00cca3;
+    --error-color: #ff4949;
+    --success-color: #00ff66;
+}
+
+[data-theme="dark"] .btn.primary {
+    color: #0b0e14;
+}
+
+/* 2. Minimal Light */
+[data-theme="light"] {
+    --bg-color: #f4f4f6;
+    --card-bg: #ffffff;
+    --accent-bg: #eaeaea;
+    --text-color: #222222;
+    --border-color: #222222;
+    --item-bg: #fafafa;
+    --item-hover: #e8e8e8;
+    --btn-bg: #222222;
+    --btn-hover: #444444;
+    --error-color: #d93025;
+    --success-color: #188038;
+}
+
+[data-theme="light"] .btn.primary {
+    color: #ffffff;
+}
