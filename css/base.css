@@ -1,0 +1,126 @@
+/* Layout & Base Structure */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.app-container {
+    width: 90%;
+    max-width: 650px;
+    padding: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.game-title {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.game-status {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    background: var(--accent-bg);
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+.puzzle-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-height: 220px;
+    justify-content: center;
+}
+
+.instruction {
+    font-size: 0.95rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.puzzle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+}
+
+.grid-item {
+    background-color: var(--item-bg);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    text-align: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    user-select: none;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.grid-item:hover {
+    transform: translateY(-2px);
+    background-color: var(--item-hover);
+}
+
+.feedback {
+    min-height: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.feedback.wrong { color: var(--error-color); }
+.feedback.correct { color: var(--success-color); }
+
+.game-footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    font-weight: bold;
+    background-color: var(--btn-bg);
+    color: var(--text-color);
+    border-radius: 4px;
+}
+
+.btn:hover:not(:disabled) {
+    background-color: var(--btn-hover);
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
