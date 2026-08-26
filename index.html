@@ -9,35 +9,30 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Header Controls -->
         <header class="game-header">
             <h1 class="game-title">THE RULE IS LYING</h1>
             <button id="theme-toggle-btn" class="btn secondary">Toggle Theme</button>
         </header>
 
-        <!-- Status & Stats -->
         <section class="game-status">
             <div id="level-display" class="stat">Level: <span id="level-val">1</span></div>
             <div id="timer-display" class="stat">Time: <span id="timer-val">--</span></div>
-            <div id="bias-display" class="stat">Observed Pattern: <span id="bias-val">Profiling...</span></div>
+            <div id="bias-display" class="stat">AI Assessment: <span id="bias-val">Profiling...</span></div>
         </section>
 
-        <!-- Main Puzzle Area -->
         <main class="puzzle-wrapper">
-            <div id="instruction-box" class="instruction">Select the item that does not belong.</div>
+            <div id="instruction-box" class="instruction">Select the object that does not belong.</div>
             <div id="puzzle-grid" class="puzzle-grid"></div>
             <div id="feedback-msg" class="feedback"></div>
         </main>
 
-        <!-- Footer Controls -->
         <footer class="game-footer">
             <button id="next-btn" class="btn primary" disabled>NEXT</button>
         </footer>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/analytics.js"></script>
-    <script src="js/puzzles.js"></script>
+    <script src="js/ai-profiler.js"></script>
+    <script src="js/rule-generator.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
 </body>
